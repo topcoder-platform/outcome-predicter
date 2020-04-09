@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+# A sample training component that trains a naive bayes model.
+# This implementation works in File mode and makes no assumptions about the input file names.
+# Input is specified as CSV with a data point in each row and the labels in the first column.
+
+from __future__ import print_function
+
+import os
+import json
+import pickle
+import sys
+import traceback
+import subprocess
+
+import pandas as pd
+
+from train import train as start_training
+
+# These are the paths to where SageMaker mounts interesting things in your container.
+prefix = '/opt/ml/'
+input_path = prefix + 'input/data'
+output_path = os.path.join(prefix, 'output')
+model_path = os.path.join(prefix, 'model')
+model_name = 'lgb'
+
+# This algorithm has a single channel of input data called 'training'. Since we run in
+# File mode, the input files are copied to the directory specified here.
+channel_name='training'
+training_path = os.path.join(input_path, channel_name)
+input_csv_file = os.listdir(training_path)[0]
+
+# The function to execute the training.
+def train():
+    print('Starting the training.')
+    try:
+        start_training(os.path.join(training_path, input_csv_file), os.path.join(model_path, model_name))
+        # store cache file lately used for tests
+        output = subprocess.run(['cp', '-a', 'cache/extended_columns.pkl', model_path], check=True)
+        if output.returncode != 0:
+            raise Exception('Failed to copy cache file into model path.')
+        print('Training complete.')
+        
+    except Exception as e:
+        # Write out an error file. This will be returned as the failureReason in the
+        # DescribeTrainingJob result.
+        trc = traceback.format_exc()
+        with open(os.path.join(output_path, 'failure'), 'w') as s:
+            s.write('Exception during training: ' + str(e) + '\n' + trc)
+        # Printing this causes the exception to be in the training job logs, as well.
+        print('Exception during training: ' + str(e) + '\n' + trc, file=sys.stderr)
+        # A non-zero exit code causes the training job to be marked as Failed.
+        sys.exit(255)
+
+if __name__ == '__main__':
+    train()
+
+    # A zero exit code causes the job to be marked a Succeeded.
+    sys.exit(0)
