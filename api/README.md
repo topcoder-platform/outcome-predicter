@@ -9,7 +9,11 @@ Set the following variables:
  **LOG_LEVEL** - the log level.  
  **PORT**  - the application port.  
  **TOPCODER_API** - URL to use to get data, e.g. challenge data.  
+ **TOPCODER_AUTH_TOKEN** - Topcoder Auth token.
  **AWS_REGION** - AWS region must match the region where a model deployed.  
+ **AWS_ACCESS_KEY** - AWS access key ID. 
+ **AWS_SECRET_KEY** - AWS secret key.
+
  **DEFAULT_MODEL** - the default model name. 
 
  Each model has the properties:

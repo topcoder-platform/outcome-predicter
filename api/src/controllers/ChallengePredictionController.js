@@ -18,21 +18,21 @@ async function predictSuccess (req, res) {
   let httpStatus
   let resultResponse
   logger.debug(`Predict success using the model=${selectedModelName} for challengeId=${challengeId}`)
-
   if (!selectedModel) {
     httpStatus = HttpStatus.BAD_REQUEST
     resultResponse = { message: `The model '${selectedModelName}' is undefined` }
   } else if (selectedModel.enabled === false) {
     httpStatus = HttpStatus.BAD_REQUEST
-    resultResponse = { message: `The model '${selectedModel}' is disabled` }
+    resultResponse = { message: `The model '${selectedModelName}' is disabled` }
   } else {
     const challenge = await getChallenge(challengeId)
+    const challengeResources = await getChallengeResources(challengeId)
     const modelFile = require(`../${selectedModel.path}`)
     if (!modelFile) {
       throw new Error(`The model path '${selectedModel.path}' is undefined`)
     }
     httpStatus = HttpStatus.OK
-    resultResponse = await modelFile.predictSuccess({ challenge: challenge, endpointName: selectedModel.endpointName })
+    resultResponse = await modelFile.predictSuccess({ challenge: challenge, challengeResources: challengeResources, endpointName: selectedModel.endpointName })
   }
   logger.debug(`Result for challengeId=${challengeId}: ${JSON.stringify(resultResponse)}`)
   res.status(httpStatus).json(resultResponse)
@@ -45,6 +45,17 @@ async function predictSuccess (req, res) {
  */
 async function getChallenge (challengeId) {
   const response = await superagent.get(`${config.TOPCODER_API}/challenges/${challengeId}`)
+  return response.body.result.content
+}
+
+/**
+ * Get challenge resources by challengeId
+ * @param challengeId
+ * @return {Promise<Object>}
+ */
+async function getChallengeResources (challengeId) {
+  const response = await superagent.get(`${config.TOPCODER_API}/challenges/${challengeId}/resources`)
+    .set({ Authorization: `Bearer ${config.TOPCODER_AUTH_TOKEN}` })
   return response.body.result.content
 }
 
