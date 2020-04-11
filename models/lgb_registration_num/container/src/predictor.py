@@ -54,12 +54,6 @@ class ScoringService(object):
         output['Success'] = cls.get_model().predict(test_data)
         output['Challenge ID'] = input['Challenge ID']
         output.to_csv(result, index=False)
-        print("Ok!")
-
-        test_labels = get_label(input)
-        print("F1 score: "+str(calculate_f1(test_labels, output)))
-        test_labels['Challenge ID'] = input['Challenge ID']
-        test_labels.to_csv('cache/test_labels.csv', index=False)
 
         return result
 
