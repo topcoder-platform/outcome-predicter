@@ -41,9 +41,23 @@ const lpad = (number, digits) => {
   return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number
 }
 
+/**
+ * Convert test data from a list of Map to String.
+ * @param records
+ * @returns {string}
+ */
+const toCSV = (records) => {
+  let result = [...records[0].keys()].join(',') + '\n'
+  for (const record of records) {
+    result += [...record.values()].join(',') + '\n'
+  }
+  return result
+}
+
 module.exports = {
   makeTheFirstLetterUppercase,
   formatDate,
   formatDateTime,
-  lpad
+  lpad,
+  toCSV
 }

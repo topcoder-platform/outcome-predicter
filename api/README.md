@@ -4,18 +4,21 @@
 1. Node.js 12+
 
 ## Config Variables
-Set the following variables:
+Set the following variables either by directly editing `./config/default.js` or via environment variables:
  
- **LOG_LEVEL** - the log level.  
- **PORT**  - the application port.  
- **TOPCODER_API** - URL to use to get data, e.g. challenge data.  
- **TOPCODER_AUTH_TOKEN** - Topcoder Auth token.
- **AWS_REGION** - AWS region must match the region where a model deployed.  
- **AWS_ACCESS_KEY** - AWS access key ID. 
- **AWS_SECRET_KEY** - AWS secret key.
+ - **LOG_LEVEL** - the log level.  
+ - **PORT**  - the application port.  
+ - **TOPCODER_API** - URL to use to get data, e.g. challenge data.  
+ - **TOPCODER_AUTH_TOKEN** - Topcoder Auth token.
+ - **AWS_REGION** - AWS region must match the region where a model deployed.  
+ - **AWS_ACCESS_KEY** - AWS access key ID. 
+ - **AWS_SECRET_KEY** - AWS secret key.
 
- **DEFAULT_MODEL** - the default model name. 
+ - **DEFAULT_MODEL** - the default model name. Default value is `lgbRegistrationNum`
+ - **MODELS.lgbRegistrationNum.endpointName** - the endpoint name for model `lgbRegistrationNum`
+ - **MODELS.lgbRegistrationDetail.endpointName** - the endpoint name for model `lgbRegistrationDetail`
 
+### Config for models
  Each model has the properties:
 
  **endpointName** - the name of a persistent endpoint to get predictions from the model.
@@ -24,17 +27,17 @@ Set the following variables:
  **path** - the file path to a model js file, e.g. '/models/DefaultModel.js'.  
  **enabled** - true/false. If false then the model can't be used and User will get 400 http error.  
 
-Example: 
-```
-  DEFAULT_MODEL: 'lightgbmModel',
-  MODELS: {
-    lightgbmModel: {
-      endpointName: 'my-image-2020-04-02-16-45-26-479',
-      path: '/models/DefaultModel.js',
-      enabled: true
+  Example: 
+  ```
+    MODELS: {
+      lgbRegistrationNum: {
+        endpointName: 'my-image-2020-04-02-16-45-26-479',
+        path: '/models/DefaultModel.js',
+        enabled: true
+      }
     }
-  }
-```
+  ```
+
 # Using the application
 Go to the the root folder:
 1  Install dependencies with `npm install`
@@ -52,8 +55,14 @@ See ![the status of the endpoint](./docs/screenshots/sagemaker-endpoint.jpg)
 2. Node.js 12+
 
 ## Setting Config Variables 
-1. Configure all config variables in `config/default.js`. 
-You need to replace <ENDPOINT_NAME> with your endpoint name and set environment variables(AWS_REGION) at least. 
+Configure at least the following variables before running the application:
+
+  - `TOPCODER_AUTH_TOKEN`
+  - `AWS_REGION`
+  - `AWS_ACCESS_KEY`
+  - `AWS_SECRET_KEY`
+  - `MODELS.lgbRegistrationNum.endpointName`
+  - `MODELS.lgbRegistrationDetail.endpointName`
 
 ## Running the application
 1.Testing the application with a default model:
@@ -70,14 +79,14 @@ The output:
 {"prediction":"success"}
 ``` 
 
-2.Testing the application with the model parameter:
+2.Testing the application with the model parameter pointing to another model:
 
 ```
 curl --location --request POST 'http://localhost:3000/predict' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "challengeId": "30120975",
-  "model": "lightgbmModel"
+  "model": "lgbRegistrationDetail"
 }'
 ``` 
 The output:
@@ -91,7 +100,7 @@ curl --location --request POST 'http://localhost:3000/predict' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "challengeId": "120975",
-  "model": "lightgbmModel"
+  "model": "lgbRegistrationNum"
 }'
 ```
 The output:
@@ -103,7 +112,7 @@ The output:
 Update a default model:
 ``` 
   MODELS: {
-    lightgbmModel: {
+    lgbRegistrationNum: {
       endpointName: 'my-image-dummy',
       path: '/models/DefaultModel.js',
       enabled: true
@@ -116,7 +125,7 @@ curl --location --request POST 'http://localhost:3000/predict' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "challengeId": "30120975",
-  "model": "lightgbmModel"
+  "model": "lgbRegistrationNum"
 }'
 ```
 The output:

@@ -13,24 +13,17 @@ Install the required dependencies by executing the command:
 pip install -r requirements.txt
 ```
 
-**Dividing of 'challenge-with-registration.xlsx' into 'raw_training_data.csv'(training data) and 'raw_test_data.csv'(test data)**
+**Training on 'training_data/data.csv'**
 Run the command:
 ```
-python divide_data.py challenge-with-registration.xlsx raw_training_data.csv raw_test_data.csv
-```
-It will take a while for loading excel.
-
-**Training on 'raw_training_data.csv'**
-Run the command:
-```
-python train.py raw_training_data.csv lgb
+python train.py ../../training_data/data.csv lgb
 ```
 It will take a while for data preprocessing.
 
-**Prediction on 'raw_test_data.csv'**
+**Prediction on 'test_data/test.csv'**
 Run the command:
 ```
-python predict.py lgb raw_test_data.csv 
+python predict.py lgb ../../test_data/test.csv 
 ```
 Note that default output is 'predictions.csv'.
 

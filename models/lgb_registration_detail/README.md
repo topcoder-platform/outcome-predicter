@@ -31,15 +31,6 @@ When you create an inference server, you can control some of Gunicorn's options 
 - **MODEL_SERVER_WORKERS**: number of workers, defaults to the number of CPU cores
 - **MODEL_SERVER_TIMEOUT**: timeout, defaults to 60 seconds
 
-## Prepare training data and test data
-Before you procceed to deployment and validation you must prepare training data for deployment and test data for validation.
-It can be done by first `cd` into the `./container/src` folder and then invoking the following commands:
-
-``` bash
-mkdir ../../test_data ../../training_data # create folders to accommodate data
-python divide_data.py challenge-with-registration.xlsx ../../training_data/data.csv ../../test_data/test.csv
-```
-
 ## Deployment
 
 First, set config variables (see above). Make sure AWS CLI is set up. If you haven't, log into the AWS CLI with `aws configure`. Please note the config variables must be set correctly and your account must have permissions to use the cores you have selected. The `ROLE_NAME` config value must be set to the name of a role that has full SageMaker permissions.
