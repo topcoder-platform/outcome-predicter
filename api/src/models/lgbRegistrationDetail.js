@@ -3,6 +3,26 @@ const util = require('../common/util')
 const prediction = require('../common/prediction.util')
 
 /**
+ * Format a date string into the format 'YYYY-mm-dd'.
+ * @param dateStr
+ * @return {string}
+ */
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr)
+  return date ? `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` : ''
+}
+
+/**
+ * Format a date time string into the format 'YYYY-mm-dd HH:mm:ss'.
+ * @param dateTimeStr
+ * @return {string}
+ */
+const formatDateTime = (dateTimeStr) => {
+  const dateTime = new Date(dateTimeStr)
+  return dateTime ? `${formatDate(dateTime)} ${util.lpad(dateTime.getHours(), 2)}:${util.lpad(dateTime.getMinutes(), 2)}:00` : ''
+}
+
+/**
  * Create a request body using challenge data
  * @param params object includes challenge and challengeResources
  * @return {string}
@@ -10,6 +30,8 @@ const prediction = require('../common/prediction.util')
 const createRequestBody = (params) => {
   const challenge = params.challenge
   const challengeResources = params.challengeResources
+  console.log(challenge)
+  console.log(challengeResources)
   const members = _.reduce(_.groupBy(challengeResources, 'properties.Handle'), (result, group, handle) => {
     result[handle] = group[0]
     return result
@@ -24,23 +46,23 @@ const createRequestBody = (params) => {
     }
     data.set('Challenge Stats Challenge ID', challenge.challengeId)
     data.set('Challenge Stats Challenge Name', challenge.challengeTitle)
-    data.set('Challenge Stats Project Category Name', 'Code') // TODO
-    data.set('Challenge Stats Submitby Date Date', util.formatDateTime(challenge.submissionEndDate))
-    data.set('Challenge Stats Complete Date Date', '2020-01-03 00:00:00') // TODO the end date of last phase?
+    data.set('Challenge Stats Project Category Name', 'Code') // hardcode Code
+    data.set('Challenge Stats Submitby Date Date', formatDateTime(challenge.submissionEndDate))
+    data.set('Challenge Stats Complete Date Date', formatDateTime(challenge.phases[challenge.phases.length - 1]['actualEndTime']))
     data.set('Challenge Stats Status Desc', challenge.currentStatus)
-    data.set('Challenge Stats Tco Track', '') // TODO
-    data.set('Challenge Stats Submitby Date Time', '2020-01-01 03:36:45') // TODO is it the same as Challenge Stats Submitby Date Date?
+    data.set('Challenge Stats Tco Track', challenge.event[0]['eventShortDesc'])
+    data.set('Challenge Stats Submitby Date Time', formatDateTime(challenge.submissionEndDate))
     data.set('Challenge Stats Tc Direct Project ID', challenge.projectId)
     data.set('Challenge Stats Challenge Manager', firstManager.properties.Handle)
     data.set('Challenge Stats Challenge Copilot', firstCopilot.properties.Handle)
-    data.set('Challenge Stats Posting Date Date', util.formatDateTime(challenge.postingDate))
+    data.set('Challenge Stats Posting Date Date', formatDateTime(challenge.postingDate))
     data.set('Challenge Stats Track', util.makeTheFirstLetterUppercase(challenge.challengeCommunity))
     data.set('Challenge Stats Technology List', `"${challenge.technologies.join(',')}"`)
     data.set('Challenge Stats Registrant Handle', registrant.handle)
-    data.set('Challenge Stats Submit Ind', 0) // TODO
-    data.set('Challenge Stats Valid Submission Ind', 0) // TODO
+    data.set('Challenge Stats Submit Ind', 0) // FIXME
+    data.set('Challenge Stats Valid Submission Ind', 0) // FIXME
     data.set('Member Profile Advanced Reporting Country', '') // TODO Missed in challenge resources
-    data.set('User Member Since Date', util.formatDateTime(members[registrant.handle].properties['Registration Date']))
+    data.set('User Member Since Date', formatDateTime(members[registrant.handle].properties['Registration Date']))
     data.set('Challenge Stats Duration', 0)
     data.set('Challenge Stats Num Valid Submissions', 0)
     data.set('Challenge Stats First Place Prize', `${challenge.prizes[0]}`)

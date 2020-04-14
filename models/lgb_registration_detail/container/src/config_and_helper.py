@@ -127,7 +127,10 @@ def number_binaryzation(input_data, target_columns=['User Member Since Date Year
             if nums_intervals[target_columns.index(column)] == None:
                 nums_intervals[target_columns.index(column)] = int(difference)
             num_intervals = nums_intervals[target_columns.index(column)]
-            step = difference / num_intervals
+            if num_intervals == 0: 
+                step = 0
+            else:
+                step = difference / num_intervals
             num_intervals += 1
 
             if get_extended_columns:
@@ -303,7 +306,10 @@ def column_analysis(input_data, to_be_extended_columns, nums_intervals=[None, No
                 nums_intervals[to_be_extended_columns['number'].index(column)] = int(difference)
             
             num_intervals = nums_intervals[to_be_extended_columns['number'].index(column)]
-            step = difference / num_intervals
+            if num_intervals == 0:
+                step = 0
+            else:
+                step = difference / num_intervals
             for i in range(num_intervals):
                 boundary1 = min_column_number + (i-0.5)*step
                 boundary2 = min_column_number + (i+0.5)*step
