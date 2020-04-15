@@ -1,6 +1,7 @@
 const _ = require('lodash')
 const util = require('../common/util')
 const prediction = require('../common/prediction.util')
+const tcResources = require('../common/TCResources.util')
 
 /**
  * Format a date string into the format 'YYYY-mm-dd'.
@@ -27,7 +28,7 @@ const formatDateTime = (dateTimeStr) => {
  * @param params object includes challenge and challengeResources
  * @return {string}
  */
-const createRequestBody = (params) => {
+const createRequestBody = async (params) => {
   const challenge = params.challenge
   const challengeResources = params.challengeResources
   console.log(challenge)
@@ -40,10 +41,11 @@ const createRequestBody = (params) => {
   const firstManager = _.find(challengeResources, { role: 'Manager' })
   const records = []
   for (const registrant of challenge.registrants) {
-    const data = new Map()
     if (!members[registrant.handle]) {
       continue
     }
+    const data = new Map()
+    const memberCountry = await tcResources.getMemberCountry(registrant.handle)
     data.set('Challenge Stats Challenge ID', challenge.challengeId)
     data.set('Challenge Stats Challenge Name', challenge.challengeTitle)
     data.set('Challenge Stats Project Category Name', 'Code') // hardcode Code
@@ -61,7 +63,7 @@ const createRequestBody = (params) => {
     data.set('Challenge Stats Registrant Handle', registrant.handle)
     data.set('Challenge Stats Submit Ind', 0) // FIXME
     data.set('Challenge Stats Valid Submission Ind', 0) // FIXME
-    data.set('Member Profile Advanced Reporting Country', '') // TODO Missed in challenge resources
+    data.set('Member Profile Advanced Reporting Country', memberCountry)
     data.set('User Member Since Date', formatDateTime(members[registrant.handle].properties['Registration Date']))
     data.set('Challenge Stats Duration', 0)
     data.set('Challenge Stats Num Valid Submissions', 0)
@@ -92,7 +94,7 @@ const createRequestBody = (params) => {
  * @return {Promise<{prediction: string}>}
  */
 const predictSuccess = async (params) => {
-  const requestBody = createRequestBody(params)
+  const requestBody = await createRequestBody(params)
   return prediction.predictSuccess(params.endpointName, requestBody)
 }
 
