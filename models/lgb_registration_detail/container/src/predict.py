@@ -13,7 +13,7 @@ def predict(model, input, output_path):
 
     print("Start to predict...")
     output = pd.DataFrame()
-    output['Success'] = model.predict(test_data)
+    output['Success Probability'] = np.array(model.predict_proba(test_data))[:, 1]
     output['Challenge Stats Challenge ID'] = test_labels['Challenge Stats Challenge ID']
     output.to_csv(output_path, index=False)
     print("Ok!")

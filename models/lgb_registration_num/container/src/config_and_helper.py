@@ -426,7 +426,7 @@ def train_model(X_train, y_train, X_valid, y_valid, params=None, model_type='lgb
 
 def calculate_f1(dataframe_true, dataframe_pred):
 
-    return f1_score(dataframe_true['Success'].values, dataframe_pred['Success'].values)
+    return f1_score(1-dataframe_true['Success'].values, 1-np.round(dataframe_pred['Success Probability'].values))
 
 def get_label(raw_data):
     """
