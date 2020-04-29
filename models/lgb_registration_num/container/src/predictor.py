@@ -51,7 +51,7 @@ class ScoringService(object):
         print("Start to predict...")
         result = StringIO()
         output = pd.DataFrame()
-        output['Success'] = cls.get_model().predict(test_data)
+        output['Success Probability'] = np.array(cls.get_model().predict_proba(test_data))[:, 1]
         output['Challenge ID'] = input['Challenge ID']
         output.to_csv(result, index=False)
 

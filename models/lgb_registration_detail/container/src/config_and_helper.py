@@ -638,7 +638,7 @@ def train_model(X_train, y_train, X_valid, y_valid, params=None, model_type='lgb
 
 def calculate_f1(dataframe_true, dataframe_pred):
 
-    return f1_score(1-dataframe_true['Success'].values, 1-dataframe_pred['Success'].values)
+    return f1_score(1-dataframe_true['Success'].values, 1-np.round(dataframe_pred['Success Probability'].values))
 
 def divide_data(raw_data, training_data_path, test_data_path, time_thr=pd.Timestamp(2020, 1, 1), num_passed_rows=962):
     """
