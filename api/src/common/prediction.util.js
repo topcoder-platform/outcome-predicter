@@ -39,18 +39,12 @@ const sendRequestToEndpoint = async (endpointName, body) => {
 /**
  * Process an endpoint response
  * @param endpointResponse
- * @return {{prediction: string}}
+ * @return {{prediction: float}}
  */
 const processEndpointResult = (endpointResponse) => {
   const lines = endpointResponse.split(/\s*[\r\n]+\s*/g)
   const score = Number(lines[1].split(',')[0])
-  if (score === 1) {
-    return { prediction: 'success' }
-  } else if (score === 0) {
-    return { prediction: 'fail' }
-  } else {
-    throw new Error('The prediction is undefined')
-  }
+  return { prediction: score }
 }
 
 /**
