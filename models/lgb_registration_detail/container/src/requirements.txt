@@ -1,6 +1,6 @@
 pandas>=0.23.4
 numpy>=1.16.3
-scikit-learn==0.22.1
+scikit-learn==0.24.2
 lightgbm>=2.2.3
 hyperopt>=0.1.2
 xlrd>=1.2.0
